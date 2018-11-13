@@ -8,7 +8,7 @@
 	//document.onkeydown = keydown;
 	//stage.setAttribute('tabindex', 0); // focusしている時のみ、keyDown,up を有効に
 	//stage.addEventListener('keydown', keydown, {passive:false});
-	document.onkeydown = keydown;
+	//document.onkeydown = keydown;
 
 	//canvas size
 	var width = 480;
@@ -43,10 +43,14 @@
 			this.y = y;
 			this.h = h;
 			this.w = w;
-			this.left = x;
-			this.down = y+h;
-			this.right = x+w;
-			this.up = y;
+			this.renew();
+		}
+
+		renew(){
+			this.left = this.x;
+			this.down = this.y+this.h;
+			this.right = this.x+this.w;
+			this.up = this.y;
 		}
 	}
 
@@ -54,20 +58,20 @@
 		constructor(){
 			this.d = 0;
 			this.is = [];
-			this.is.push(new Interapter(width-50*3, height*0.5, 10, height*0.5));
-			this.is.push(new Interapter(width-50*2, height*0.5, 10, height*0.5));
-			this.is.push(new Interapter(width-50*1, height*0.5, 10, height*0.5));
-			this.is.push(new Interapter(width-50*0, height*0.5, 10, height*0.5));
+			this.is.push(new Interapter(width-60*3, height*0.6*Math.random(), 13-5*Math.random(), height*0.6*Math.random()));
+			this.is.push(new Interapter(width-60*2, height*0.6*Math.random(), 13-5*Math.random(), height*0.6*Math.random()));
+			this.is.push(new Interapter(width-60*1, height*0.6*Math.random(), 13-5*Math.random(), height*0.6*Math.random()));
+			this.is.push(new Interapter(width-60*0, height*0.6*Math.random(), 13-5*Math.random(), height*0.6*Math.random()));
 		}
 
 		createMap(){
-			var i = new Interapter(width, height*0.5, 10, height*0.5);
-			this.is.push(i);
+			this.is.push(new Interapter(width, height*Math.random(), 25-20*Math.random(), height*0.5*Math.random()));
 		}
 
 		moveMap(){
 			for(var i of this.is){
 				i.x -= 1;
+				i.renew();
 			}
 			if(this.is[0].right==0){
 				this.is.shift();
@@ -91,10 +95,7 @@
 			this.y = height*0.5;
 			this.r = 3;
 			this.color = "red";
-			this.gravity = 0.05;
-			this.force = 0;
-			this.a = this.gravity - this.force;
-			this.y_prev = this.y-1;
+			this.gravity = 0.07;
 			this.y0 = this.y;
 			this.v0 = 0;
 			this.t0 = 0;
@@ -131,14 +132,18 @@
 		}
 
 		animate(){
+			if(!animateflag)return;
 			ctx.clearRect(0,0,width,height);
 			p.fall();
 			p.draw();
 			map.d += 1;
-			if(map.d%50==0)map.createMap();
+			if(map.d%60==0)map.createMap();
 			map.moveMap();
 			map.draw();
-			if(collision()) console.log("collision! game over.");
+			if(collision()) {
+				animateflag = 0;
+				console.log("collision! game over.");
+			}
 		}
 	}
 
@@ -157,8 +162,13 @@
 		return false;
 	}
 
-	function keydown(){
+	var animateflag = 1;
+	document.onkeydown = function(e){
 		p.jump();
+
+		if(e.keyCode == 69){
+			animateflag = 1 - animateflag;
+		}
 	}
 
 })();
