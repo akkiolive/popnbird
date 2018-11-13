@@ -44,6 +44,8 @@
 			this.h = h;
 			this.w = w;
 			this.renew();
+			this.x_prev = x;
+			this.y_prev = y;
 		}
 
 		renew(){
@@ -70,6 +72,8 @@
 
 		moveMap(){
 			for(var i of this.is){
+				i.x_prev = i.x;
+				i.y_prev = i.y;
 				i.x -= 1;
 				i.renew();
 			}
@@ -129,6 +133,7 @@
 	class Game{
 		start(){
 			setInterval(this.animate, 10);
+			this.score = 0;
 		}
 
 		animate(){
@@ -140,15 +145,60 @@
 			if(map.d%60==0)map.createMap();
 			map.moveMap();
 			map.draw();
+			scoring();
+			drawScore();
 			if(collision()) {
 				animateflag = 0;
 				console.log("collision! game over.");
+				gameover();
 			}
 		}
+
+
 	}
 
 	var game = new Game;
-	game.start();
+	
+	var startflag = 0;
+	function startmenu(){
+		if(!startflag) return;
+		ctx.clearRect(0,0,width,height);
+		p.draw();
+		map.draw();
+		ctx.textAlign = "center"
+		ctx.textBaseline = "alphabetic";
+		ctx.font = "60px serif";
+		ctx.fillText("Pop'n bird", width/2, height/2);
+		ctx.stroke();
+	}
+
+	var gameoverflag = 0;
+	function gameover(){
+		animateflag = 0;
+		gameoverflag = 1;
+		ctx.textAlign = "center"
+		ctx.textBaseline = "alphabetic";
+		ctx.font = "48px serif";
+		ctx.fillText("Game Over", width/2, height/2);
+		ctx.font = "24px serif";
+		ctx.fillText("Score: "+game.score, width/2, height*0.7);
+	}
+
+	function drawScore(){
+		ctx.font = "20px serif";
+		ctx.textAlign = "right";
+		ctx.textBaseline = "top";
+		ctx.fillText("Score: "+game.score+"  ", width, 0);
+	}
+
+	function scoring(){
+		for(var i of map.is){
+			if(p.x<i.x_prev && i.x<=p.x){
+				game.score += Math.round(i.w);
+			}
+		}
+	}	
+
 
 	function collision(){
 		if(p.y<0 || height<p.y) return true;
@@ -164,11 +214,17 @@
 
 	var animateflag = 1;
 	document.onkeydown = function(e){
-		p.jump();
+		if(!startflag){
+			startflag = 1;
+			game.start();
+		}
 
 		if(e.keyCode == 69){
 			animateflag = 1 - animateflag;
 		}
+		else p.jump();
 	}
+
+	startmenu();
 
 })();
