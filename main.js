@@ -6,8 +6,9 @@
 
 	//keydown 
 	//document.onkeydown = keydown;
-	stage.setAttribute('tabindex', 0); // focusしている時のみ、keyDown,up を有効に
-	stage.addEventListener('keydown', keydown, {passive:false});
+	//stage.setAttribute('tabindex', 0); // focusしている時のみ、keyDown,up を有効に
+	//stage.addEventListener('keydown', keydown, {passive:false});
+	document.onkeydown = keydown;
 
 	//canvas size
 	var width = 480;
@@ -90,8 +91,14 @@
 			this.y = height*0.5;
 			this.r = 3;
 			this.color = "red";
-			this.gravity = 0.5;
+			this.gravity = 0.05;
 			this.force = 0;
+			this.a = this.gravity - this.force;
+			this.y_prev = this.y-1;
+			this.y0 = this.y;
+			this.v0 = 0;
+			this.t0 = 0;
+			this.jumppower = 1.5;
 		}
 
 		draw(){
@@ -103,7 +110,15 @@
 		}
 
 		fall(){
-			this.y += this.gravity;
+			var t = map.d - this.t0;
+			this.y = 0.5*this.gravity*t*t + this.v0*t + this.y0;
+		}
+
+		jump(){
+			console.log("jump");
+			this.y0 = this.y;
+			this.t0 = map.d;
+			this.v0 = -this.jumppower;
 		}
 	}
 
@@ -131,17 +146,19 @@
 	game.start();
 
 	function collision(){
-		if(p.y<0 || height<p.y)return true;
-		for(var i in map.is){
-			if(i.left<=p.x && p.x<=i.right && i.up<=p.y && p.y<=i.down){
-				return true;
+		if(p.y<0 || height<p.y) return true;
+		for(var i of map.is){
+			if(i.left<=p.x && p.x<=i.right){
+				if(i.up<=p.y && p.y<=i.down){
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
 	function keydown(){
-
+		p.jump();
 	}
 
 })();
