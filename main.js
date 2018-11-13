@@ -153,8 +153,6 @@
 				gameover();
 			}
 		}
-
-
 	}
 
 	var game = new Game;
@@ -176,6 +174,7 @@
 	function gameover(){
 		animateflag = 0;
 		gameoverflag = 1;
+		startflag = 0;
 		ctx.textAlign = "center"
 		ctx.textBaseline = "alphabetic";
 		ctx.font = "48px serif";
@@ -199,7 +198,6 @@
 		}
 	}	
 
-
 	function collision(){
 		if(p.y<0 || height<p.y) return true;
 		for(var i of map.is){
@@ -214,15 +212,24 @@
 
 	var animateflag = 1;
 	document.onkeydown = function(e){
-		if(!startflag){
-			startflag = 1;
+		if(!startflag && !gameoverflag){
 			game.start();
 		}
 
-		if(e.keyCode == 69){
+		if(e.keyCode == 69){ //TODO
 			animateflag = 1 - animateflag;
 		}
-		else p.jump();
+		else if(startflag) p.jump();
+
+		if(gameoverflag){
+			gameoverflag = 0;
+			startflag = 1;
+			animateflag = 1;
+			console.log("restart");
+			map = new Map();
+			p = new Player();
+			game.score = 0;;
+		}
 	}
 
 	startmenu();
