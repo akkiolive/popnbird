@@ -6,8 +6,8 @@
 
 	//keydown 
 	//document.onkeydown = keydown;
-	//stage.setAttribute('tabindex', 0); // focusしている時のみ、keyDown,up を有効に
-	//stage.addEventListener('keydown', keydown, {passive:false});
+	stage.setAttribute('tabindex', 0); // focusしている時のみ、keyDown,up を有効に
+	stage.addEventListener('keydown', keydown, {passive:false});
 	//document.onkeydown = keydown;
 
 	//canvas size
@@ -134,6 +134,7 @@
 		start(){
 			setInterval(this.animate, 10);
 			this.score = 0;
+			startflag = 1;
 		}
 
 		animate(){
@@ -174,7 +175,6 @@
 	function gameover(){
 		animateflag = 0;
 		gameoverflag = 1;
-		startflag = 0;
 		ctx.textAlign = "center"
 		ctx.textBaseline = "alphabetic";
 		ctx.font = "48px serif";
@@ -211,19 +211,18 @@
 	}
 
 	var animateflag = 1;
-	document.onkeydown = function(e){
-		if(!startflag && !gameoverflag){
+	function keydown(e){
+		if(!startflag){
 			game.start();
 		}
 
-		if(e.keyCode == 69){ //TODO
+		if(e.keyCode == 27){
 			animateflag = 1 - animateflag;
 		}
 		else if(startflag) p.jump();
-
-		if(gameoverflag){
+		
+		if(gameoverflag){ //restart
 			gameoverflag = 0;
-			startflag = 1;
 			animateflag = 1;
 			console.log("restart");
 			map = new Map();
