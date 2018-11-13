@@ -67,7 +67,7 @@
 		}
 
 		createMap(){
-			this.is.push(new Interapter(width, height*Math.random(), 25-20*Math.random(), height*0.5*Math.random()));
+			this.is.push(new Interapter(width, (height+100)*Math.random(), 25-20*Math.random(), height*0.7*Math.random()));
 		}
 
 		moveMap(){
@@ -161,15 +161,15 @@
 	
 	var startflag = 0;
 	function startmenu(){
-		if(!startflag) return;
 		ctx.clearRect(0,0,width,height);
 		p.draw();
 		map.draw();
 		ctx.textAlign = "center"
-		ctx.textBaseline = "alphabetic";
+		ctx.textBaseline = "middle";
 		ctx.font = "60px serif";
-		ctx.fillText("Pop'n bird", width/2, height/2);
+		ctx.fillText(" Pop'n bird", width/2, height/2);
 		ctx.stroke();
+		console.log("pop'n bird");
 	}
 
 	var gameoverflag = 0;
